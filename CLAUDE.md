@@ -107,7 +107,7 @@ As documented in README.md, planned improvements include:
 When building new features, we follow this structured approach:
 
 1. **Product Requirements Document (PRD)**
-   - Create PRD in `docs/prd/feature-name-prd.md`
+   - Create PRD in `docs/prd/XXX-feature-name-prd.md` (where XXX is a 3-digit number for ordering)
    - Include: Problem Statement, Goals, Requirements, Success Metrics
    - Use this as the single source of truth for feature scope
 
