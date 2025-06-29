@@ -67,9 +67,9 @@ func main() {
 		os.Exit(1)
 	}
 
-	fmt.Printf("Searching for audio files in: %s\n", currentDir)
+	fmt.Printf("Searching for files in: %s\n", currentDir)
 
-	var audioFiles []string
+	var matchingFiles []string
 	err = filepath.Walk(currentDir, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
 			return err
@@ -79,7 +79,7 @@ func main() {
 			ext := strings.ToLower(filepath.Ext(path))
 			for _, configExt := range config.Extensions {
 				if ext == strings.ToLower(configExt) {
-					audioFiles = append(audioFiles, path)
+					matchingFiles = append(matchingFiles, path)
 					break
 				}
 			}
@@ -92,10 +92,10 @@ func main() {
 		os.Exit(1)
 	}
 
-	fmt.Printf("Found %d audio files\n", len(audioFiles))
+	fmt.Printf("Found %d matching files\n", len(matchingFiles))
 
 	const maxWorkers = 5
-	jobs := make(chan string, len(audioFiles))
+	jobs := make(chan string, len(matchingFiles))
 	var wg sync.WaitGroup
 
 	for i := 0; i < maxWorkers; i++ {
@@ -103,7 +103,7 @@ func main() {
 		go worker(jobs, &wg, *dryRun, config.TargetTsMachine)
 	}
 
-	for _, file := range audioFiles {
+	for _, file := range matchingFiles {
 		jobs <- file
 	}
 	close(jobs)

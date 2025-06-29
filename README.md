@@ -1,10 +1,10 @@
 # ts-copy
 
-A simple Go program that recursively finds files and copies them to a Tailscale machine using `tailscale cp`.
+A simple Go program that recursively finds files matching configured extensions and copies them to a Tailscale machine using `tailscale cp`.
 
 ## Overview
 
-ts-copy searches the current directory for files (configurable extensions) and copies them to a specified Tailscale machine using concurrent workers.
+ts-copy searches the current directory for files matching configurable extensions and copies them to a specified Tailscale machine using concurrent workers.
 
 ## Installation
 
@@ -39,6 +39,8 @@ ts-copy searches the current directory for files (configurable extensions) and c
      - ".mp3"
      - ".flac"
      - ".wav"
+     - ".pdf"
+     - ".txt"
    targetTsMachine: your-tailscale-machine-name
    ```
 
@@ -54,7 +56,7 @@ go build
 
 ## Usage
 
-Run from any directory containing audio files:
+Run from any directory containing files you want to transfer:
 
 ```bash
 # Dry run to see what would be copied
@@ -66,7 +68,7 @@ ts-copy
 
 The program will:
 
-- Recursively search the current directory for files matching configured extensions
+- Recursively search the current directory for files matching the configured extensions
 - Copy each file to the specified Tailscale machine using up to 5 concurrent workers
 - Execute: `sudo tailscale cp <file> <targetTsMachine>:`
 

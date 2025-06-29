@@ -1,7 +1,7 @@
 # ts-copy Project Overview
 
 ## Purpose
-ts-copy is a Go CLI application that recursively searches for audio files in the current directory and copies them to a specified Tailscale machine using concurrent workers. It's designed to simplify bulk file transfers over Tailscale networks.
+ts-copy is a Go CLI application that recursively searches for files matching configured extensions in the current directory and copies them to a specified Tailscale machine using concurrent workers. It's designed to simplify bulk file transfers over Tailscale networks.
 
 ## Architecture & Key Components
 
@@ -18,6 +18,8 @@ extensions:
   - ".mp3"
   - ".flac" 
   - ".wav"
+  - ".pdf"
+  - ".txt"
 targetTsMachine: "your-tailscale-machine-name"
 ```
 
@@ -93,7 +95,7 @@ As documented in README.md, planned improvements include:
 - File extensions are case-insensitive
 - No current mechanism to resume interrupted transfers
 - No validation of target machine availability before starting
-- Audio files (*.mp3, *.flac, *.wav) are gitignored for testing purposes - test files exist locally but aren't committed to the repository
+- Test files matching configured extensions are gitignored - test files exist locally but aren't committed to the repository
 
 ## License
 MIT License (Copyright 2025 Nick Kirby)
