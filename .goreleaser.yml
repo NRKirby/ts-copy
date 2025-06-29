@@ -1,0 +1,64 @@
+# .goreleaser.yml for ts-copy
+# yaml-language-server: $schema=https://goreleaser.com/static/schema.json
+# vim: set ts=2 sw=2 tw=0 fo=cnqoj
+
+version: 2
+
+before:
+  hooks:
+    - go mod tidy
+
+builds:
+  - id: ts-copy
+    env:
+      - CGO_ENABLED=0
+    ldflags:
+      - -s -w
+      - -X 'main.version={{.Version}}'
+    goos:
+      - linux
+      - darwin
+      - windows
+    goarch:
+      - arm64
+      - amd64
+    main: .
+    binary: ts-copy
+    ignore:
+      - goos: windows
+        goarch: arm64
+
+archives:
+  - format: tar.gz
+    format_overrides:
+      - goos: windows
+        format: zip
+    name_template: >-
+      {{ .ProjectName }}_
+      {{- title .Os }}_
+      {{- if eq .Arch "amd64" }}x86_64
+      {{- else if eq .Arch "386" }}i386
+      {{- else }}{{ .Arch }}{{ end }}
+      {{- if .Arm }}v{{ .Arm }}{{ end }}
+
+changelog:
+  filters:
+    exclude:
+      - "^docs:"
+      - "^test:"
+      - "^chore:"
+
+release:
+  prerelease: auto
+  draft: false
+  make_latest: true
+  footer: >-
+    ---
+    
+    **Installation:**
+    
+    Download the appropriate binary for your platform and place it in your PATH.
+    
+    Don't forget to create your config file at `~/.ts-copy/config.yaml`.
+    
+    Released by [GoReleaser](https://github.com/goreleaser/goreleaser).
