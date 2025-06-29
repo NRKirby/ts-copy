@@ -6,21 +6,34 @@ A simple Go program that recursively finds files and copies them to a Tailscale 
 
 ts-copy searches the current directory for files (configurable extensions) and copies them to a specified Tailscale machine using concurrent workers.
 
-## Setup
+## Installation
 
-1. Build the program:
+1. **Download the binary:**
+
+   - Go to the [Releases page](https://github.com/NRKirby/ts-copy/releases)
+   - Download the appropriate binary for your platform (Linux, macOS, or Windows)
+   - Extract the archive
+
+2. **Install the binary:**
 
    ```bash
-   go build
+   # Move to a directory in your PATH
+   sudo mv ts-copy /usr/local/bin/ts-copy
+
+   # Or for macOS with Homebrew
+   mv ts-copy /opt/homebrew/bin/ts-copy
+
+   # Make executable (if needed)
+   chmod +x /usr/local/bin/ts-copy
    ```
 
-2. Create config directory and file:
+3. **Create config directory and file:**
 
    ```bash
    mkdir -p ~/.ts-copy && touch ~/.ts-copy/config.yaml
    ```
 
-3. Edit `~/.ts-copy/config.yaml`:
+4. **Edit `~/.ts-copy/config.yaml`:**
    ```yaml
    extensions:
      - ".mp3"
@@ -29,16 +42,26 @@ ts-copy searches the current directory for files (configurable extensions) and c
    targetTsMachine: your-tailscale-machine-name
    ```
 
+## For Developers
+
+If you want to build from source:
+
+```bash
+git clone https://github.com/NRKirby/ts-copy.git
+cd ts-copy
+go build
+```
+
 ## Usage
 
 Run from any directory containing audio files:
 
 ```bash
 # Dry run to see what would be copied
-./ts-copy --dry-run
+ts-copy --dry-run
 
 # Actually copy the files
-./ts-copy
+ts-copy
 ```
 
 The program will:
@@ -55,7 +78,6 @@ The program will:
 
 Features not yet implemented but planned:
 
-- **GoReleaser CI/CD**: Automated binary builds and releases from git tags
 - **Tailscale status check**: Detect and warn if Tailscale is not running before attempting file transfers
 - **Progress indicators**: Show transfer progress for large files
 - **Retry logic**: Automatically retry failed transfers with exponential backoff
