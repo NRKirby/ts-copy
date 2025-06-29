@@ -1,10 +1,10 @@
 # ts-copy
 
-A simple Go program that recursively finds files matching configured extensions and copies them to a Tailscale machine using `tailscale cp`.
+A simple Go program that recursively finds files matching specified extensions and copies them to a Tailscale machine using `tailscale cp`.
 
 ## Overview
 
-ts-copy searches the current directory for files matching configurable extensions and copies them to a specified Tailscale machine using concurrent workers.
+ts-copy searches the current directory for files matching the extensions you specify on the command line and copies them to a specified Tailscale machine using concurrent workers.
 
 ## Installation
 
