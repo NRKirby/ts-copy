@@ -18,31 +18,16 @@ ts-copy searches the current directory for files matching configurable extension
 
    ```bash
    # Move to a directory in your PATH
-   sudo mv ts-copy /usr/local/bin/ts-copy
+   sudo mv tscp /usr/local/bin/tscp
 
    # Or for macOS with Homebrew
-   mv ts-copy /opt/homebrew/bin/ts-copy
+   mv tscp /opt/homebrew/bin/tscp
 
    # Make executable (if needed)
-   chmod +x /usr/local/bin/ts-copy
+   chmod +x /usr/local/bin/tscp
    ```
 
-3. **Create config directory and file:**
-
-   ```bash
-   mkdir -p ~/.ts-copy && touch ~/.ts-copy/config.yaml
-   ```
-
-4. **Edit `~/.ts-copy/config.yaml`:**
-   ```yaml
-   extensions:
-     - ".mp3"
-     - ".flac"
-     - ".wav"
-     - ".pdf"
-     - ".txt"
-   targetTsMachine: your-tailscale-machine-name
-   ```
+That's it! No configuration files needed - the tool is ready to use.
 
 ## For Developers
 
@@ -59,22 +44,39 @@ go build
 Run from any directory containing files you want to transfer:
 
 ```bash
-# Dry run to see what would be copied
-ts-copy --dry-run
+# Copy audio files to my-server
+tscp my-server --ext .mp3 --ext .flac --ext .wav
 
-# Actually copy the files
-ts-copy
+# Copy documents using short form flags
+tscp my-server -e .pdf -e .docx -e .txt
+
+# Dry run to see what would be copied
+tscp my-server --ext .zip --dry-run
+
+# Copy single file type
+tscp my-server -e .mp4
+```
+
+## Command Line Arguments
+
+```
+Usage: tscp <target-machine> [options]
+
+Arguments:
+  <target-machine>    Name of the Tailscale machine to copy files to
+
+Options:
+  --ext <extension>   File extension to copy (repeatable)
+  -e <extension>      File extension to copy (repeatable, short form)  
+  --dry-run          Show what would be copied without executing commands
+  --help, -h         Show help message and usage examples
 ```
 
 The program will:
 
-- Recursively search the current directory for files matching the configured extensions
+- Recursively search the current directory for files matching the specified extensions
 - Copy each file to the specified Tailscale machine using up to 5 concurrent workers
-- Execute: `sudo tailscale cp <file> <targetTsMachine>:`
-
-## Options
-
-- `--dry-run`: Show what files would be copied without executing commands
+- Execute: `sudo tailscale cp <file> <targetMachine>:`
 
 ## Future Enhancements
 

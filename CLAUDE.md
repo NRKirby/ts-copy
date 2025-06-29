@@ -101,5 +101,32 @@ As documented in README.md, planned improvements include:
 - No validation of target machine availability before starting
 - Test files matching configured extensions are gitignored - test files exist locally but aren't committed to the repository
 
+## Development Workflow
+
+### Feature Development Process
+When building new features, we follow this structured approach:
+
+1. **Product Requirements Document (PRD)**
+   - Create PRD in `docs/prd/feature-name-prd.md`
+   - Include: Problem Statement, Goals, Requirements, Success Metrics
+   - Use this as the single source of truth for feature scope
+
+2. **Implementation Planning**
+   - Break down requirements into actionable tasks
+   - Use TodoWrite tool to track implementation progress
+   - Plan technical approach and architecture changes
+
+3. **Development & Testing**
+   - Implement feature following existing code conventions
+   - Update documentation to reflect changes
+   - Ensure tests pass and code builds successfully
+
+4. **Documentation Updates**
+   - Update README.md with new functionality
+   - Update CLAUDE.md if architectural changes are made
+   - Update any relevant configuration examples
+
+This workflow ensures clear requirements, proper planning, and maintainable code.
+
 ## License
 MIT License (Copyright 2025 Nick Kirby)

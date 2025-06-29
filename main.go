@@ -5,59 +5,55 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
-	"os/user"
 	"path/filepath"
 	"strings"
 	"sync"
-
-	"gopkg.in/yaml.v3"
 )
 
-type Config struct {
-	Extensions        []string `yaml:"extensions"`
-	TargetTsMachine   string   `yaml:"targetTsMachine"`
+type extensionFlag []string
+
+func (e *extensionFlag) String() string {
+	return strings.Join(*e, ", ")
 }
 
-func loadConfig() (*Config, error) {
-	usr, err := user.Current()
-	if err != nil {
-		return nil, fmt.Errorf("failed to get current user: %w", err)
-	}
-
-	configPath := filepath.Join(usr.HomeDir, ".ts-copy", "config.yaml")
-	
-	if _, err := os.Stat(configPath); os.IsNotExist(err) {
-		return nil, fmt.Errorf("config file not found at %s\n\nPlease create a config file with the following format:\n\nextensions:\n  - \".mp3\"\n  - \".flac\"\n  - \".wav\"\ntargetTsMachine: \"my-tailscale-machine\"", configPath)
-	}
-
-	data, err := os.ReadFile(configPath)
-	if err != nil {
-		return nil, fmt.Errorf("failed to read config file: %w", err)
-	}
-
-	var config Config
-	if err := yaml.Unmarshal(data, &config); err != nil {
-		return nil, fmt.Errorf("failed to parse config file: %w", err)
-	}
-
-	if config.TargetTsMachine == "" {
-		return nil, fmt.Errorf("targetTsMachine is required in config file but was not found or is empty")
-	}
-
-	if len(config.Extensions) == 0 {
-		return nil, fmt.Errorf("extensions array is required in config file but was not found or is empty")
-	}
-
-	return &config, nil
+func (e *extensionFlag) Set(value string) error {
+	*e = append(*e, value)
+	return nil
 }
 
 func main() {
+	var extensions extensionFlag
 	dryRun := flag.Bool("dry-run", false, "Show what would be copied without executing commands")
+	flag.Var(&extensions, "ext", "File extension to copy (repeatable)")
+	flag.Var(&extensions, "e", "File extension to copy (repeatable, short form)")
+
+	flag.Usage = func() {
+		fmt.Fprintf(os.Stderr, "Usage: %s <target-machine> [options]\n\n", os.Args[0])
+		fmt.Fprintf(os.Stderr, "Arguments:\n")
+		fmt.Fprintf(os.Stderr, "  <target-machine>    Name of the Tailscale machine to copy files to\n\n")
+		fmt.Fprintf(os.Stderr, "Options:\n")
+		flag.PrintDefaults()
+		fmt.Fprintf(os.Stderr, "\nExamples:\n")
+		fmt.Fprintf(os.Stderr, "  %s my-server --ext .mp3 --ext .flac\n", os.Args[0])
+		fmt.Fprintf(os.Stderr, "  %s my-server -e .pdf -e .docx --dry-run\n", os.Args[0])
+		fmt.Fprintf(os.Stderr, "  %s my-server -e .zip\n", os.Args[0])
+	}
+
 	flag.Parse()
 
-	config, err := loadConfig()
-	if err != nil {
-		fmt.Printf("Error: %v\n", err)
+	// Validate target machine
+	if len(flag.Args()) == 0 {
+		fmt.Fprintf(os.Stderr, "Error: Target machine is required as the first argument\n\n")
+		flag.Usage()
+		os.Exit(1)
+	}
+
+	targetMachine := flag.Args()[0]
+
+	// Validate extensions
+	if len(extensions) == 0 {
+		fmt.Fprintf(os.Stderr, "Error: At least one file extension must be specified using --ext or -e flag\n\n")
+		flag.Usage()
 		os.Exit(1)
 	}
 
@@ -77,7 +73,7 @@ func main() {
 
 		if !info.IsDir() {
 			ext := strings.ToLower(filepath.Ext(path))
-			for _, configExt := range config.Extensions {
+			for _, configExt := range extensions {
 				if ext == strings.ToLower(configExt) {
 					matchingFiles = append(matchingFiles, path)
 					break
@@ -100,7 +96,7 @@ func main() {
 
 	for i := 0; i < maxWorkers; i++ {
 		wg.Add(1)
-		go worker(jobs, &wg, *dryRun, config.TargetTsMachine)
+		go worker(jobs, &wg, *dryRun, targetMachine)
 	}
 
 	for _, file := range matchingFiles {
