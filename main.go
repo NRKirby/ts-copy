@@ -14,8 +14,8 @@ import (
 )
 
 type Config struct {
-	Extensions           []string `yaml:"extensions"`
-	TargetTsMachineName  string   `yaml:"targetTsMachineName"`
+	Extensions        []string `yaml:"extensions"`
+	TargetTsMachine   string   `yaml:"targetTsMachine"`
 }
 
 func loadConfig() (*Config, error) {
@@ -27,7 +27,7 @@ func loadConfig() (*Config, error) {
 	configPath := filepath.Join(usr.HomeDir, ".ts-copy", "config.yaml")
 	
 	if _, err := os.Stat(configPath); os.IsNotExist(err) {
-		return nil, fmt.Errorf("config file not found at %s\n\nPlease create a config file with the following format:\n\nextensions:\n  - \".mp3\"\n  - \".flac\"\n  - \".wav\"\ntargetTsMachineName: \"my-tailscale-node\"", configPath)
+		return nil, fmt.Errorf("config file not found at %s\n\nPlease create a config file with the following format:\n\nextensions:\n  - \".mp3\"\n  - \".flac\"\n  - \".wav\"\ntargetTsMachine: \"my-tailscale-machine\"", configPath)
 	}
 
 	data, err := os.ReadFile(configPath)
@@ -40,8 +40,8 @@ func loadConfig() (*Config, error) {
 		return nil, fmt.Errorf("failed to parse config file: %w", err)
 	}
 
-	if config.TargetTsMachineName == "" {
-		return nil, fmt.Errorf("targetTsMachineName is required in config file but was not found or is empty")
+	if config.TargetTsMachine == "" {
+		return nil, fmt.Errorf("targetTsMachine is required in config file but was not found or is empty")
 	}
 
 	if len(config.Extensions) == 0 {
@@ -100,7 +100,7 @@ func main() {
 
 	for i := 0; i < maxWorkers; i++ {
 		wg.Add(1)
-		go worker(jobs, &wg, *dryRun, config.TargetTsMachineName)
+		go worker(jobs, &wg, *dryRun, config.TargetTsMachine)
 	}
 
 	for _, file := range audioFiles {
