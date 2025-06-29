@@ -5,14 +5,61 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"os/user"
 	"path/filepath"
 	"strings"
 	"sync"
+
+	"gopkg.in/yaml.v3"
 )
+
+type Config struct {
+	Extensions           []string `yaml:"extensions"`
+	TargetTsMachineName  string   `yaml:"targetTsMachineName"`
+}
+
+func loadConfig() (*Config, error) {
+	usr, err := user.Current()
+	if err != nil {
+		return nil, fmt.Errorf("failed to get current user: %w", err)
+	}
+
+	configPath := filepath.Join(usr.HomeDir, ".ts-copy", "config.yaml")
+	
+	if _, err := os.Stat(configPath); os.IsNotExist(err) {
+		return nil, fmt.Errorf("config file not found at %s\n\nPlease create a config file with the following format:\n\nextensions:\n  - \".mp3\"\n  - \".flac\"\n  - \".wav\"\ntargetTsMachineName: \"my-tailscale-node\"", configPath)
+	}
+
+	data, err := os.ReadFile(configPath)
+	if err != nil {
+		return nil, fmt.Errorf("failed to read config file: %w", err)
+	}
+
+	var config Config
+	if err := yaml.Unmarshal(data, &config); err != nil {
+		return nil, fmt.Errorf("failed to parse config file: %w", err)
+	}
+
+	if config.TargetTsMachineName == "" {
+		return nil, fmt.Errorf("targetTsMachineName is required in config file but was not found or is empty")
+	}
+
+	if len(config.Extensions) == 0 {
+		return nil, fmt.Errorf("extensions array is required in config file but was not found or is empty")
+	}
+
+	return &config, nil
+}
 
 func main() {
 	dryRun := flag.Bool("dry-run", false, "Show what would be copied without executing commands")
 	flag.Parse()
+
+	config, err := loadConfig()
+	if err != nil {
+		fmt.Printf("Error: %v\n", err)
+		os.Exit(1)
+	}
 
 	currentDir, err := os.Getwd()
 	if err != nil {
@@ -30,8 +77,11 @@ func main() {
 
 		if !info.IsDir() {
 			ext := strings.ToLower(filepath.Ext(path))
-			if ext == ".mp3" || ext == ".flac" || ext == ".wav" {
-				audioFiles = append(audioFiles, path)
+			for _, configExt := range config.Extensions {
+				if ext == strings.ToLower(configExt) {
+					audioFiles = append(audioFiles, path)
+					break
+				}
 			}
 		}
 		return nil
@@ -50,7 +100,7 @@ func main() {
 
 	for i := 0; i < maxWorkers; i++ {
 		wg.Add(1)
-		go worker(jobs, &wg, *dryRun)
+		go worker(jobs, &wg, *dryRun, config.TargetTsMachineName)
 	}
 
 	for _, file := range audioFiles {
@@ -62,14 +112,15 @@ func main() {
 	fmt.Println("All files processed")
 }
 
-func worker(jobs <-chan string, wg *sync.WaitGroup, dryRun bool) {
+func worker(jobs <-chan string, wg *sync.WaitGroup, dryRun bool, targetMachine string) {
 	defer wg.Done()
 	for file := range jobs {
+		destination := targetMachine + ":"
 		if dryRun {
-			fmt.Printf("[DRY RUN] Would copy: %s\n", file)
+			fmt.Printf("[DRY RUN] Would copy: %s to %s\n", file, destination)
 		} else {
-			fmt.Printf("Copying: %s\n", file)
-			cmd := exec.Command("sudo", "tailscale", "cp", file, "my-tailscale-node:")
+			fmt.Printf("Copying: %s to %s\n", file, destination)
+			cmd := exec.Command("sudo", "tailscale", "cp", file, destination)
 			if err := cmd.Run(); err != nil {
 				fmt.Printf("Error copying %s: %v\n", file, err)
 			}
