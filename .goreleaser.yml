@@ -23,7 +23,7 @@ builds:
       - arm64
       - amd64
     main: .
-    binary: ts-copy
+    binary: tscp
     ignore:
       - goos: windows
         goarch: arm64
