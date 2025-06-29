@@ -33,14 +33,18 @@ targetTsMachine: "your-tailscale-machine-name"
 ## Project Structure
 ```
 ts-copy/
-├── main.go           # Main application logic
-├── go.mod           # Go module definition
-├── go.sum           # Dependency checksums
-├── justfile         # Task automation (contains dry-run test)
-├── LICENSE          # MIT License
-├── README.md        # User documentation
-├── .gitignore       # Excludes audio files, binaries, and IDE files
-└── test/           # Test directory (audio files excluded from git)
+├── main.go             # Main application logic
+├── go.mod              # Go module definition
+├── go.sum              # Dependency checksums
+├── justfile            # Task automation (contains dry-run test)
+├── LICENSE             # MIT License
+├── README.md           # User documentation
+├── .gitignore          # Excludes test files, binaries, and IDE files
+├── .github/
+│   └── workflows/
+│       └── release.yml # GitHub Actions release workflow
+├── .goreleaser.yml     # GoReleaser build configuration
+└── test/               # Test directory (files excluded from git)
 ```
 
 ## Dependencies
