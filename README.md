@@ -67,7 +67,7 @@ Arguments:
 
 Options:
   --ext <extension>   File extension to copy (repeatable)
-  -e <extension>      File extension to copy (repeatable, short form)  
+  -e <extension>      File extension to copy (repeatable, short form)
   --dry-run          Show what would be copied without executing commands
   --help, -h         Show help message and usage examples
 ```
