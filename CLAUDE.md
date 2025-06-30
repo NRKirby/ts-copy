@@ -44,6 +44,9 @@ ts-copy/
 │   └── workflows/
 │       └── release.yml # GitHub Actions release workflow
 ├── .goreleaser.yml     # GoReleaser build configuration
+├── docs/
+│   ├── prd/            # Product Requirements Documents
+│   └── adr/            # Architecture Decision Records
 └── test/               # Test directory (files excluded from git)
 ```
 
@@ -116,17 +119,24 @@ When building new features, we follow this structured approach:
    - Update PRD status from "Draft" to "Approved" once approved
    - No implementation work should start without this approval
 
-3. **Implementation Planning**
+3. **Architecture Decision Records (ADR)**
+   - Create ADR in `docs/adr/XXX-decision-name.md` (where XXX is a 3-digit number for ordering)
+   - Include: Context, Decision, Status, Consequences
+   - Use for documenting significant technical and architectural decisions
+   - Status options: Proposed, Accepted, Deprecated, Superseded
+
+4. **Implementation Planning**
    - Break down requirements into actionable tasks
    - Use TodoWrite tool to track implementation progress
    - Plan technical approach and architecture changes
+   - Reference relevant ADRs for architectural decisions
 
-4. **Development & Testing**
+5. **Development & Testing**
    - Implement feature following existing code conventions
    - Update documentation to reflect changes
    - Ensure tests pass and code builds successfully
 
-5. **Documentation Updates**
+6. **Documentation Updates**
    - Update README.md with new functionality
    - Update CLAUDE.md if architectural changes are made
    - Update any relevant configuration examples
