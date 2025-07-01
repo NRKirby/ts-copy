@@ -27,8 +27,6 @@ ts-copy/
 │   └── tscp/
 │       └── main.go             # CLI entrypoint and coordination
 ├── internal/
-│   ├── config/
-│   │   └── args.go             # Argument parsing and validation
 │   ├── discovery/
 │   │   └── files.go            # File discovery and filtering logic
 │   ├── transfer/
@@ -43,8 +41,7 @@ ts-copy/
 
 ### Package Responsibilities
 
-- **cmd/tscp**: Minimal main function that coordinates between packages
-- **internal/config**: CLI argument parsing, validation, and configuration structure
+- **cmd/tscp**: Minimal main function that coordinates between packages and handles CLI argument parsing
 - **internal/discovery**: File system traversal and extension filtering
 - **internal/transfer**: Tailscale command execution and error handling
 - **internal/worker**: Concurrent processing logic and worker pool management
