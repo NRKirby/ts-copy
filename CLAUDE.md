@@ -38,21 +38,32 @@ tscp my-server -e .pdf -e .docx
 ## Project Structure
 ```
 ts-copy/
-├── main.go             # Main application logic
+├── CLAUDE.md           # Project instructions and architecture docs
+├── LICENSE             # MIT License
+├── README.md           # User documentation
+├── main.go             # Main application logic (legacy)
 ├── go.mod              # Go module definition
 ├── go.sum              # Dependency checksums
 ├── justfile            # Task automation (contains dry-run test)
-├── LICENSE             # MIT License
-├── README.md           # User documentation
-├── .gitignore          # Excludes test files, binaries, and IDE files
-├── .github/
-│   └── workflows/
-│       └── release.yml # GitHub Actions release workflow
-├── .goreleaser.yml     # GoReleaser build configuration
+├── cmd/
+│   └── tscp/
+│       └── main.go     # Main CLI entry point
+├── internal/
+│   ├── discovery/
+│   │   └── files.go    # File discovery logic
+│   ├── transfer/
+│   │   └── tailscale.go # Tailscale transfer operations
+│   └── worker/
+│       └── pool.go     # Worker pool implementation
 ├── docs/
 │   ├── prd/            # Product Requirements Documents
+│   │   └── 001-cli-redesign-prd.md
 │   └── adr/            # Architecture Decision Records
+│       ├── 000-project-structure.md
+│       └── 001-testing-strategy.md
 └── test/               # Test directory (files excluded from git)
+    ├── 01 - Leviticus - The Burial.flac
+    └── Drs, Dogger - Let You Down (Original Mix).flac
 ```
 
 ## Dependencies
