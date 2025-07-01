@@ -8,24 +8,19 @@ ts-copy is a Go CLI application that recursively searches for files matching con
 ### Core Application (`main.go`)
 - **Language**: Go 1.23.8
 - **Main functionality**: File discovery, concurrent copying using goroutines
-- **Configuration**: YAML-based config at `~/.ts-copy/config.yaml`
+- **Configuration**: CLI arguments only (no config files)
 - **Concurrency**: Uses 5 worker goroutines for parallel file transfers
 - **Commands executed**: `sudo tailscale cp <file> <targetMachine>:`
 
-### Configuration Structure
-```yaml
-extensions:
-  - ".mp3"
-  - ".flac" 
-  - ".wav"
-  - ".pdf"
-  - ".txt"
-targetTsMachine: "your-tailscale-machine-name"
+### CLI Usage
+```bash
+tscp <target-machine> --ext .mp3 --ext .flac --dry-run
+tscp my-server -e .pdf -e .docx
 ```
 
 ### Key Features
 - **Recursive file discovery**: Walks directory tree to find matching files
-- **Configurable file extensions**: Supports any file types via config
+- **Configurable file extensions**: Supports any file types via CLI flags
 - **Dry-run mode**: `--dry-run` flag to preview operations without execution
 - **Concurrent transfers**: 5 parallel workers for efficient copying
 - **Error handling**: Graceful error reporting for failed transfers
@@ -98,7 +93,7 @@ As documented in README.md, planned improvements include:
 
 ## Important Notes for Development
 - Uses `sudo tailscale cp` - requires elevated privileges
-- Config file is mandatory - app will exit if not found
+- CLI arguments are mandatory - app will exit if target machine or extensions not provided
 - File extensions are case-insensitive
 - No current mechanism to resume interrupted transfers
 - No validation of target machine availability before starting
@@ -155,6 +150,16 @@ This workflow ensures clear requirements, proper planning, and maintainable code
 - Review all documentation formatting before committing
 - Ensure code blocks render correctly in markdown
 - Verify command examples are properly formatted and aligned
+
+## Critical Development Directive
+
+**MANDATORY DOCUMENTATION UPDATES**: When completing ANY feature, bug fix, or architectural change, you MUST:
+
+1. **Check README.md** - Update usage examples, installation instructions, feature descriptions
+2. **Check CLAUDE.md** - Update architecture descriptions, configuration details, development notes
+3. **Verify consistency** - Ensure both files accurately reflect the current implementation
+
+**Failure to update documentation is considered incomplete work.** No feature is complete until documentation matches the implementation.
 
 ## License
 MIT License (Copyright 2025 Nick Kirby)
