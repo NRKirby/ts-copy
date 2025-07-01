@@ -8,24 +8,19 @@ ts-copy is a Go CLI application that recursively searches for files matching con
 ### Core Application (`main.go`)
 - **Language**: Go 1.23.8
 - **Main functionality**: File discovery, concurrent copying using goroutines
-- **Configuration**: YAML-based config at `~/.ts-copy/config.yaml`
+- **Configuration**: CLI arguments only (no config files)
 - **Concurrency**: Uses 5 worker goroutines for parallel file transfers
 - **Commands executed**: `sudo tailscale cp <file> <targetMachine>:`
 
-### Configuration Structure
-```yaml
-extensions:
-  - ".mp3"
-  - ".flac" 
-  - ".wav"
-  - ".pdf"
-  - ".txt"
-targetTsMachine: "your-tailscale-machine-name"
+### CLI Usage
+```bash
+tscp <target-machine> --ext .mp3 --ext .flac --dry-run
+tscp my-server -e .pdf -e .docx
 ```
 
 ### Key Features
 - **Recursive file discovery**: Walks directory tree to find matching files
-- **Configurable file extensions**: Supports any file types via config
+- **Configurable file extensions**: Supports any file types via CLI flags
 - **Dry-run mode**: `--dry-run` flag to preview operations without execution
 - **Concurrent transfers**: 5 parallel workers for efficient copying
 - **Error handling**: Graceful error reporting for failed transfers
@@ -44,6 +39,9 @@ ts-copy/
 │   └── workflows/
 │       └── release.yml # GitHub Actions release workflow
 ├── .goreleaser.yml     # GoReleaser build configuration
+├── docs/
+│   ├── prd/            # Product Requirements Documents
+│   └── adr/            # Architecture Decision Records
 └── test/               # Test directory (files excluded from git)
 ```
 
@@ -95,7 +93,7 @@ As documented in README.md, planned improvements include:
 
 ## Important Notes for Development
 - Uses `sudo tailscale cp` - requires elevated privileges
-- Config file is mandatory - app will exit if not found
+- CLI arguments are mandatory - app will exit if target machine or extensions not provided
 - File extensions are case-insensitive
 - No current mechanism to resume interrupted transfers
 - No validation of target machine availability before starting
@@ -116,17 +114,24 @@ When building new features, we follow this structured approach:
    - Update PRD status from "Draft" to "Approved" once approved
    - No implementation work should start without this approval
 
-3. **Implementation Planning**
+3. **Architecture Decision Records (ADR)**
+   - Create ADR in `docs/adr/XXX-decision-name.md` (where XXX is a 3-digit number for ordering)
+   - Include: Context, Decision, Status, Consequences
+   - Use for documenting significant technical and architectural decisions
+   - Status options: Proposed, Accepted, Deprecated, Superseded
+
+4. **Implementation Planning**
    - Break down requirements into actionable tasks
    - Use TodoWrite tool to track implementation progress
    - Plan technical approach and architecture changes
+   - Reference relevant ADRs for architectural decisions
 
-4. **Development & Testing**
+5. **Development & Testing**
    - Implement feature following existing code conventions
    - Update documentation to reflect changes
    - Ensure tests pass and code builds successfully
 
-5. **Documentation Updates**
+6. **Documentation Updates**
    - Update README.md with new functionality
    - Update CLAUDE.md if architectural changes are made
    - Update any relevant configuration examples
@@ -145,6 +150,16 @@ This workflow ensures clear requirements, proper planning, and maintainable code
 - Review all documentation formatting before committing
 - Ensure code blocks render correctly in markdown
 - Verify command examples are properly formatted and aligned
+
+## Critical Development Directive
+
+**MANDATORY DOCUMENTATION UPDATES**: When completing ANY feature, bug fix, or architectural change, you MUST:
+
+1. **Check README.md** - Update usage examples, installation instructions, feature descriptions
+2. **Check CLAUDE.md** - Update architecture descriptions, configuration details, development notes
+3. **Verify consistency** - Ensure both files accurately reflect the current implementation
+
+**Failure to update documentation is considered incomplete work.** No feature is complete until documentation matches the implementation.
 
 ## License
 MIT License (Copyright 2025 Nick Kirby)
