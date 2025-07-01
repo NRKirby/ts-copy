@@ -1,5 +1,15 @@
 # ts-copy Project Overview
 
+## CRITICAL DEVELOPMENT DIRECTIVE
+
+**MANDATORY DOCUMENTATION UPDATES AFTER ANY CHANGE**: When completing ANY feature, bug fix, or architectural change, you MUST IMMEDIATELY:
+
+1. **Update README.md** - Ensure usage examples, installation instructions, and feature descriptions are current
+2. **Update CLAUDE.md** - Ensure architecture descriptions, configuration details, and development notes reflect changes
+3. **Verify consistency** - Both files must accurately reflect the current implementation
+
+**This is non-negotiable. No work is complete until documentation is updated to match the implementation.**
+
 ## Purpose
 ts-copy is a Go CLI application that recursively searches for files matching configured extensions in the current directory and copies them to a specified Tailscale machine using concurrent workers. It's designed to simplify bulk file transfers over Tailscale networks.
 
