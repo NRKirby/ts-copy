@@ -11,13 +11,13 @@
 **This is non-negotiable. No work is complete until documentation is updated to match the implementation.**
 
 ## Purpose
-ts-copy is a Go CLI application that recursively searches for files matching configured extensions in the current directory and copies them to a specified Tailscale machine using concurrent workers. It's designed to simplify bulk file transfers over Tailscale networks.
+ts-copy is a Go CLI application that efficiently copies multiple files to Tailscale machines using concurrent workers. Instead of running many sequential `tailscale file cp` commands, it transfers files in parallel for significantly better performance over Tailscale networks.
 
 ## Architecture & Key Components
 
 ### Core Application (`main.go`)
 - **Language**: Go 1.23.8
-- **Main functionality**: File discovery, concurrent copying using goroutines
+- **Main functionality**: Concurrent file copying using goroutines for parallel transfers
 - **Configuration**: CLI arguments only (no config files)
 - **Concurrency**: Uses 5 worker goroutines for parallel file transfers
 - **Commands executed**: `sudo tailscale cp <file> <targetMachine>:`
@@ -29,10 +29,10 @@ tscp my-server -e .pdf -e .docx
 ```
 
 ### Key Features
-- **Recursive file discovery**: Walks directory tree to find matching files
+- **Concurrent transfers**: 5 parallel workers for efficient copying (main feature)
+- **File discovery**: Recursively walks directory tree to find matching files
 - **Configurable file extensions**: Supports any file types via CLI flags
 - **Dry-run mode**: `--dry-run` flag to preview operations without execution
-- **Concurrent transfers**: 5 parallel workers for efficient copying
 - **Error handling**: Graceful error reporting for failed transfers
 
 ## Project Structure
@@ -41,7 +41,6 @@ ts-copy/
 ├── CLAUDE.md           # Project instructions and architecture docs
 ├── LICENSE             # MIT License
 ├── README.md           # User documentation
-├── main.go             # Main application logic (legacy)
 ├── go.mod              # Go module definition
 ├── go.sum              # Dependency checksums
 ├── justfile            # Task automation (contains dry-run test)
