@@ -38,16 +38,23 @@ func main() {
 		fmt.Fprintf(os.Stderr, "  %s my-server -e .zip\n", os.Args[0])
 	}
 
-	flag.Parse()
-
-	// Validate target machine
-	if len(flag.Args()) == 0 {
+	// Find target machine before parsing flags
+	var targetMachine string
+	var filteredArgs []string
+	
+	if len(os.Args) < 2 {
 		fmt.Fprintf(os.Stderr, "Error: Target machine is required as the first argument\n\n")
 		flag.Usage()
 		os.Exit(1)
 	}
-
-	targetMachine := flag.Args()[0]
+	
+	targetMachine = os.Args[1]
+	
+	// Create new args list with target machine removed
+	filteredArgs = append([]string{os.Args[0]}, os.Args[2:]...)
+	os.Args = filteredArgs
+	
+	flag.Parse()
 
 	// Validate extensions
 	if len(extensions) == 0 {
@@ -75,7 +82,17 @@ func main() {
 
 	// Process files with worker pool
 	const maxWorkers = 5
-	worker.ProcessFiles(matchingFiles, targetMachine, *dryRun, maxWorkers)
+	errorCount := worker.ProcessFiles(matchingFiles, targetMachine, *dryRun, maxWorkers)
 	
-	fmt.Println("All files processed")
+	if errorCount > 0 {
+		if errorCount == len(matchingFiles) {
+			// All files failed, don't print anything positive
+			os.Exit(1)
+		} else {
+			fmt.Printf("Completed with %d error(s)\n", errorCount)
+			os.Exit(1)
+		}
+	} else {
+		fmt.Println("All files processed successfully")
+	}
 }
