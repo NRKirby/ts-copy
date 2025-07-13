@@ -16,7 +16,7 @@ func CopyFile(filePath, targetMachine string, dryRun bool) error {
 	}
 
 	fmt.Printf("Copying: %s to %s\n", filePath, destination)
-	cmd := exec.Command("sudo", "tailscale", "file", "cp", filePath, destination)
+	cmd := exec.Command("tailscale", "file", "cp", filePath, destination)
 	output, err := cmd.CombinedOutput()
 	if err != nil {
 		return fmt.Errorf("error copying %s: %s", filePath, string(output))
