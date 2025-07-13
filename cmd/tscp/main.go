@@ -6,6 +6,7 @@ import (
 	"os"
 	"strings"
 	"ts-copy/internal/discovery"
+	"ts-copy/internal/transfer"
 	"ts-copy/internal/worker"
 )
 
@@ -79,6 +80,16 @@ func main() {
 	}
 
 	fmt.Printf("Found %d matching files\n", len(matchingFiles))
+
+	// Preflight check: verify target machine is online
+	if !*dryRun {
+		fmt.Printf("Checking if target machine '%s' is online...\n", targetMachine)
+		if err := transfer.CheckTargetMachineOnline(targetMachine); err != nil {
+			fmt.Printf("Error: %v\n", err)
+			os.Exit(1)
+		}
+		fmt.Printf("Target machine '%s' is online and ready\n", targetMachine)
+	}
 
 	// Process files with worker pool
 	const maxWorkers = 5
