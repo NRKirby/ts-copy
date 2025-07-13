@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"strings"
+	"time"
 	"ts-copy/internal/discovery"
 	"ts-copy/internal/transfer"
 	"ts-copy/internal/worker"
@@ -22,6 +23,7 @@ func (e *extensionFlag) Set(value string) error {
 }
 
 func main() {
+	startTime := time.Now()
 	var extensions extensionFlag
 	dryRun := flag.Bool("dry-run", false, "Show what would be copied without executing commands")
 	flag.Var(&extensions, "ext", "File extension to copy (repeatable)")
@@ -95,15 +97,20 @@ func main() {
 	const maxWorkers = 5
 	errorCount := worker.ProcessFiles(matchingFiles, targetMachine, *dryRun, maxWorkers)
 	
+	duration := time.Since(startTime)
+	minutes := int(duration.Minutes())
+	seconds := int(duration.Seconds()) % 60
+	
 	if errorCount > 0 {
 		if errorCount == len(matchingFiles) {
 			// All files failed, don't print anything positive
+			fmt.Printf("Completed in %dm %ds\n", minutes, seconds)
 			os.Exit(1)
 		} else {
-			fmt.Printf("Completed with %d error(s)\n", errorCount)
+			fmt.Printf("Completed with %d error(s) in %dm %ds\n", errorCount, minutes, seconds)
 			os.Exit(1)
 		}
 	} else {
-		fmt.Println("All files processed successfully")
+		fmt.Printf("All files processed successfully in %dm %ds\n", minutes, seconds)
 	}
 }
